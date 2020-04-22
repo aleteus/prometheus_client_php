@@ -65,11 +65,11 @@ $prometheus->pushGateway($timeProcess, $parameters, $help);
 
 Essa parte do código é a responsável por enviar todas as informações para o Prometheus e Pushgateway e ela possui três parâmetros obrigatórios: ($timeProcess, $parameters, $help). 
 
-- O  ```php $timeprocess``` precisa ter o valor de algum momento do processamento do código.
-- O ```php $parameters``` vai enviar o array que criamos no exemlo anterior.
-- E o ```php $help``` vai possuir alguma informação adicional que queira armazenar no Pushgateway.
+- O  ```$timeprocess``` precisa ter o valor de algum momento do processamento do código.
+- O ```$parameters``` vai enviar o array que criamos no exemlo anterior.
+- E o ```$help``` vai possuir alguma informação adicional que queira armazenar no Pushgateway.
 
-#### Obs: Se algum desses parâmetros for nulo, o envio não irá funcionar! =)
+#### - Obs: Se algum desses parâmetros for nulo, o envio não irá funcionar!
 
 
 
