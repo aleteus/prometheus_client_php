@@ -1,145 +1,85 @@
-# A prometheus client library written in PHP
+# Prometheus Client em PHP
 
-[![CircleCI](https://circleci.com/gh/endclothing/prometheus_client_php/tree/master.svg?style=shield)](https://circleci.com/gh/endclothing/prometheus_client_php/tree/master)
-
-This library uses Redis or APCu to do the client side aggregation.
-If using Redis, we recommend to run a local Redis instance next to your PHP workers.
-
-## How does it work?
-
-Usually PHP worker processes don't share any state.
-You can pick from three adapters.
-Redis, APC or an in memory adapter.
-While the first needs a separate binary running, the second just needs the [APC](https://pecl.php.net/package/APCU) extension to be installed. If you don't need persistent metrics between requests (e.g. a long running cron job or script) the in memory adapter might be suitable to use.
-
-## Installation
-
-Add as [Composer](https://getcomposer.org/) dependency:
+## Instalação
 
 ```sh
-composer require endclothing/prometheus_client_php
+composer require aleteus/prometheus_client_php
 ```
 
-## Usage
+## Como usar? 
 
-A simple counter:
 ```php
-\Prometheus\CollectorRegistry::getDefault()
-    ->getOrRegisterCounter('', 'some_quick_counter', 'just a quick measurement')
-    ->inc();
+            
+            $parameters = [
+                'name1' => $var1,
+                'name2' => $var2,
+                'name3' => $var3
+            ];
+            
+            $prometheus = new PrometheusClient(
+                '*:9091', 
+                'nome', 
+                'da_metrica', 
+                'produto', 
+                $parameters, 
+                'tipo da metrica (histogram, counter ou gauge)', 'nome_da_aplicação');  
+               
+                $prometheus->pushGateway($timeProcess, $parameters, $help);
 ```
+# Explicando:
 
-Write some enhanced metrics:
-```php
-$registry = \Prometheus\CollectorRegistry::getDefault();
+## Parameters ($parameters):
 
-$counter = $registry->getOrRegisterCounter('test', 'some_counter', 'it increases', ['type']);
-$counter->incBy(3, ['blue']);
+- O parameters armazena informações adicionais que são escolhidas de acordo com a necessidade da monitoria, e aparecem em forma de 'etiquetas' na interface do Pushgateway, as quais serão manipuladas na hora de montar os gráficos no Grafana. Este mantém o padrão 'name1' => $var1. A string 'name1' pra indicar o nome que indique o valor da váriável '$var1'.
 
-$gauge = $registry->getOrRegisterGauge('test', 'some_gauge', 'it sets', ['type']);
-$gauge->set(2.5, ['blue']);
+## Prometheus ($prometheus):
 
-$histogram = $registry->getOrRegisterHistogram('test', 'some_histogram', 'it observes', ['type'], [0.1, 1, 2, 3.5, 4, 5, 6, 7, 8, 9]);
-$histogram->observe(3.5, ['blue']);
-```
+- O cliente é criado a partir de sete argumentos: 
+  - Endereço do Pushgateway,
+  - Nome da métrica (separado por duas strings)
+  - Nome do produto
+  - O próprio $parameters
+  - Tipo da métrica
+  - Nome da aplicação
 
-Manually register and retrieve metrics (these steps are combined in the `getOrRegister...` methods):
-```php
-$registry = \Prometheus\CollectorRegistry::getDefault();
-
-$counterA = $registry->registerCounter('test', 'some_counter', 'it increases', ['type']);
-$counterA->incBy(3, ['blue']);
-
-// once a metric is registered, it can be retrieved using e.g. getCounter:
-$counterB = $registry->getCounter('test', 'some_counter')
-$counterB->incBy(2, ['red']);
-```
-
-Expose the metrics:
-```php
-$registry = \Prometheus\CollectorRegistry::getDefault();
-
-$renderer = new RenderTextFormat();
-$result = $renderer->render($registry->getMetricFamilySamples());
-
-header('Content-type: ' . RenderTextFormat::MIME_TYPE);
-echo $result;
-```
-
-Change the Redis options (the example shows the defaults):
-```php
-\Prometheus\Storage\Redis::setDefaultOptions(
-    [
-        'host' => '127.0.0.1',
-        'port' => 6379,
-        'password' => null,
-        'timeout' => 0.1, // in seconds
-        'read_timeout' => '10', // in seconds
-        'persistent_connections' => false
-    ]
-);
-```
-
-Using the InMemory storage:
-```php
-$registry = new CollectorRegistry(new InMemory());
-
-$counter = $registry->registerCounter('test', 'some_counter', 'it increases', ['type']);
-$counter->incBy(3, ['blue']);
-
-$renderer = new RenderTextFormat();
-$result = $renderer->render($registry->getMetricFamilySamples());
-```
-
-### Advanced Usage
-
-#### Advanced Histogram Usage
-On passing an empty array for the bucket parameter on instantiation, a set of default buckets will be used instead.
-Whilst this is a good base for a typical web application, there is named constructor to assist in the generation of
-exponential / geometric buckets.
-
-Eg:
-```
-Histogram::exponentialBuckets(0.05, 1.5, 10);
-```
-
-This will start your buckets with a value of 1.5, grow them by a factor of 1.5 per bucket across a set of 10 buckets.
-
-Also look at the [examples](examples).
-
-## Development
-
-### Dependencies
-
-* PHP ^7.3
-* PHP Redis extension
-* PHP APCu extension
-* [Composer](https://getcomposer.org/doc/00-intro.md#installation-linux-unix-osx)
-* Redis
-
-Start a Redis instance:
-```
-docker-compose up Redis
-```
-
-Run the tests:
-```
-composer install
-
-# when Redis is not listening on localhost:
-# export REDIS_HOST=192.168.59.100
-./vendor/bin/phpunit
-```
-
-## Black box testing
-
-Just start the nginx, fpm & Redis setup with docker-compose:
-```
-docker-compose up
-```
-Pick the adapter you want to test.
+### Exemplo:
 
 ```
-docker-compose run phpunit env ADAPTER=apc vendor/bin/phpunit tests/Test/
-docker-compose run phpunit env ADAPTER=redis vendor/bin/phpunit tests/Test/
+$prometheus = new PrometheusClient(
+                '*:9091', 
+                'nome', 
+                'da_metrica', 
+                'produto', 
+                $parameters, 
+                'tipo da metrica (histogram, counter ou gauge)', 'nome_da_aplicação');  
+               
+                $prometheus->pushGateway($timeProcess, $parameters, $help);
 ```
+
+## Pushgateway
+
+```
+$prometheus->pushGateway($timeProcess, $parameters, $help);
+```
+
+Essa parte do código é a responsável por enviar todas as informações para o Prometheus e Pushgateway e ela possui três parâmetros obrigatórios: ($timeProcess, $parameters, $help). 
+
+- O  ```$timeprocess``` precisa ter o valor de algum momento do processamento do código.
+- O ```$parameters``` vai enviar o array que criamos no exemlo anterior.
+- E o ```$help``` vai possuir alguma informação adicional que queira armazenar no Pushgateway.
+
+#### Obs: Se algum desses parâmetros for nulo, o envio não irá funcionar! =)
+
+### Guias de instalação do Prometheus e Pushgateway:
+
+#### Prometheus: https://blog.ruanbekker.com/blog/2019/05/07/setup-prometheus-and-node-exporter-on-ubuntu-for-epic-monitoring/
+#### Pushgateway: https://blog.ruanbekker.com/blog/2019/05/17/install-pushgateway-to-expose-metrics-to-prometheus/
+
+
+
+
+
+
+
+
+
