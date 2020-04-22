@@ -28,11 +28,11 @@ composer require aleteus/prometheus_client_php
 ```
 # Explicando:
 
-## Parameters ($parameters):
+## Parameters:
 
 - O parameters armazena informações adicionais que são escolhidas de acordo com a necessidade da monitoria, e aparecem em forma de 'etiquetas' na interface do Pushgateway, as quais serão manipuladas na hora de montar os gráficos no Grafana. Este mantém o padrão 'name1' => $var1. A string 'name1' pra indicar o nome que indique o valor da váriável '$var1'.
 
-## Prometheus ($prometheus):
+## Prometheus:
 
 - O cliente é criado a partir de sete argumentos: 
   - Endereço do Pushgateway,
