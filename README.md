@@ -44,7 +44,8 @@ composer require aleteus/prometheus_client_php
 
 ### Exemplo:
 
-```
+```php
+
 $prometheus = new PrometheusClient(
                 '*:9091', 
                 'nome', 
