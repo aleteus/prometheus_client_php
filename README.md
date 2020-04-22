@@ -71,10 +71,19 @@ Essa parte do código é a responsável por enviar todas as informações para o
 
 #### - Obs: Se algum desses parâmetros for nulo, o envio não irá funcionar!
 
+## Tipos de métricas
+
+### Histogram
+- 'Histograms' captam eventos e a frequência que estes ocorrem.
+
+### Counter
+- 'Counters' tem a utilidade de seu próprio significado, simplesmente um contador, o qual se reinicia no final do processo.
+
+### Gauge
+-'Gauges' são similarres aos 'Counters', mas o valor de um Gauge pode subir ou descer.
 
 
-
-### Guias de instalação do Prometheus e Pushgateway:
+## Guias de instalação do Prometheus e Pushgateway:
 
 #### Prometheus: https://blog.ruanbekker.com/blog/2019/05/07/setup-prometheus-and-node-exporter-on-ubuntu-for-epic-monitoring/
 #### Pushgateway: https://blog.ruanbekker.com/blog/2019/05/17/install-pushgateway-to-expose-metrics-to-prometheus/
